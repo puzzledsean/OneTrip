@@ -1,24 +1,61 @@
 var URL = "https://api.uber.com/v1/products"
 var serverTok = "ooz5hyCMQ1Ib8Q306BMgLe6KWyEjDmRNjSb9OCGk"
 var latitude, longitude;
-var uberBaseRate, uberPerDistance;
+var uberBaseRate, uberPerDistance, uberPerTime;
 var endMiles = 23.24;
 var latForUber = 42.358466;
 var longForUber = -71.096059;
 var locationData;
 
+var url = window.location
+var query = window.location.search.substring(1)
+var string = JSON.stringify(query)
+var stringArray = string.split("=")
+var budget = parseInt(stringArray[1])
+
+
+$.ajax({
+  url: URL,
+  headers: {
+    Authorization: "Token " + serverTok
+  },
+  data: {
+    latitude : latForUber,
+    longitude : longForUber,
+	},
+  success: function(html){
+  	//console.log('success');
+    uberBaseRate = html.products[0].price_details.base;
+    uberPerDistance = html.products[0].price_details.cost_per_minute;
+  },
+  error: function (response) {
+  	//console.log('fail');
+  	console.log(response);
+  },
+  type: 'GET',
+  // dataType : 'jsonp'
+});
+
+
+setTimeout(function (){
+  //console.log(uberBaseRate);
+  //console.log(uberPerDistance);
+
+
+
 
 $.getScript("http://oauth.googlecode.com/svn/code/javascript/oauth.js", function(){
   $.getScript("http://oauth.googlecode.com/svn/code/javascript/sha1.js", function(){
-        var priceAsked = "get price asked from user using javascript when user clicks submit";
-        var startingLoc = "get starting loc from user using javascript when user clicks submit";
+        var priceAsked = budget;
+        //var startingLoc = "get starting loc from user using javascript when user clicks submit";
+        console.log(priceAsked)
 
         //data from uber
         var uberCityData = "insert uber api call to get city info below";
         var uberCity = { //based on the city of boston, should be taking data from uber api
             "baseFare":2,
-            "perMin":.16,
-            "perMile":1.24,
+            "perMin":uberPerTime,
+            "perMile":uberPerDistance,
             "minFare":5,
             "safeRides":1
         };
@@ -33,10 +70,10 @@ $.getScript("http://oauth.googlecode.com/svn/code/javascript/oauth.js", function
             //
             consumerKey : "d_TgfQDhHorz-VHX8omVHQ",
             consumerSecret : "T58G5KZiBwtgvLg6X0f6l_QkEZM",
-            accessToken : "e0znhSQNrhw5dXWE-D9RGbznzbVyAqVj",
+            accessToken : "HvVrxH4oyuj5gbDbs98Fnifd-bthyowe",
             // This example is a proof of concept, for how to use the Yelp v2 API with javascript.
             // You wouldn't actually want to expose your access token secret like this in a real application.
-            accessTokenSecret : "XhSvbPBFe-6MEUq7JQW_A1Acky4",
+            accessTokenSecret : "jv1EFGuLQd9kvIBnUoFChpDqLCs",
             serviceProvider : {
                 signatureMethod : "HMAC-SHA1"
             }
@@ -45,6 +82,8 @@ $.getScript("http://oauth.googlecode.com/svn/code/javascript/oauth.js", function
         var near = 'Boston';
 
         var accessor = {
+            consumerKey : auth.consumerKey,
+            accessToken : auth.accessToken,
             consumerSecret : auth.consumerSecret,
             tokenSecret : auth.accessTokenSecret
         };
@@ -56,6 +95,7 @@ $.getScript("http://oauth.googlecode.com/svn/code/javascript/oauth.js", function
         parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
         parameters.push(['oauth_token', auth.accessToken]);
         parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+        parameters.push(['format', 'json']);
 
         var message = {
             'action' : 'http://api.yelp.com/v2/search',
@@ -64,6 +104,7 @@ $.getScript("http://oauth.googlecode.com/svn/code/javascript/oauth.js", function
         };
 
         OAuth.setTimestampAndNonce(message);
+        OAuth.completeRequest(message, accessor);        
         OAuth.SignatureMethod.sign(message, accessor);
 
         var parameterMap = OAuth.getParameterMap(message.parameters);
@@ -78,8 +119,7 @@ $.getScript("http://oauth.googlecode.com/svn/code/javascript/oauth.js", function
             'success' : function(data, textStats, XMLHttpRequest) {
                 //$(#yelpInfo).val(data);
                 //$("body").append(output);
-                alert('yoaysdofjasldkfjalksdfj');
-                console.log(data);
+                //console.log(data);
                 locationData = data;
 
                 callback();
@@ -103,7 +143,7 @@ $.getScript("http://oauth.googlecode.com/svn/code/javascript/oauth.js", function
         };
 
         function callback(){
-            console.log(locationData);
+            //console.log(locationData);
             //for calculating the random location
             //var locations = "insert yelp/googlemaps api call to get locations within miles possible"; //(json object) 
             var randomLoc = locationData.businesses[Math.floor((Math.random() * locationData.businesses.length) + 1)].id; //calculate the random location using hardcoded info for now (get name for now)
@@ -120,36 +160,7 @@ $.getScript("http://oauth.googlecode.com/svn/code/javascript/oauth.js", function
         var timeBetweenLocs = "insert google maps api call here using startingLoc and randomLoc"; //in minutes
 })
 })
-
-$.ajax({
-  url: URL,
-  headers: {
-    Authorization: "Token " + serverTok
-  },
-  data: {
-    latitude : latForUber,
-    longitude : longForUber,
-	},
-  success: function(html){
-  	//console.log('success');
-    uberBaseRate = html.products[0].price_details.base;
-    uberPerDistance = html.products[0].price_details.cost_per_distance;
-  },
-  error: function (response) {
-  	//console.log('fail');
-  	console.log(response);
-  },
-  type: 'GET',
-  // dataType : 'jsonp'
-});
-
-
-setTimeout(function (){
-  console.log(uberBaseRate);
-  console.log(uberPerDistance);
-
 }, 500); // delay 500 milliseconds to stall and wait for the uber api call to come back 
-
 
 // window.onload = function() {
 //     if (navigator.geolocation) {

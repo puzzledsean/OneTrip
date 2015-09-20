@@ -33,7 +33,7 @@
     <![endif]-->
 
 
-
+    
 </head>
 
 <body id="page-top">
@@ -56,9 +56,8 @@
             </div>
                 
                 <p></p>
-                <div id="yelpInfo"></div>
 
-                <a href="randomize.html"><button id="createTrip" type="button" class="btn btn-success btn-large">Go</button></a>
+                <button id="createTrip" type="button" class="btn btn-success btn-large">Go</button>
 
             </div>
         </div>
@@ -68,6 +67,11 @@
     <script src="js/jquery.js"></script>
     <script src="uber.js"></script>
     
+    <script>
+      $('#createTrip').click(function(){
+        window.location='randomize.html?budgetID=' + $('#budgetID').val();
+      });
+    </script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
