@@ -4,6 +4,25 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+.uberButton {
+    background-image: url('../img/UBER_API_Button_2x_Grey_hard edge.png');
+    background-size: cover;
+    width: 280px;
+    height: 44px;
+    margin: 0 auto;
+}
+
+#time {
+    text-align: right;
+    margin-top: 2%;
+    padding-top: 12px;
+    padding-right: 14px;
+}
+
+#startID{
+    border-radius:20px;
+}
+
 html,
 body {
     width: 100%;
